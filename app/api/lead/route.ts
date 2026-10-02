@@ -81,12 +81,17 @@ export async function POST(request: Request) {
       !GOOGLE_SHEETS_WEBHOOK_URL.includes("AKfycbz_GOOGLE_SHEETS_DEFAULT_WEBHOOK")
     ) {
       try {
+        const formData = new URLSearchParams();
+        Object.entries(payload).forEach(([k, v]) => {
+          formData.append(k, String(v ?? ""));
+        });
+
         const response = await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
           },
-          body: JSON.stringify(payload),
+          body: formData.toString(),
           redirect: "follow",
         });
 

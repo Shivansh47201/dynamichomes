@@ -33,19 +33,25 @@ export async function submitFormToGoogleSheets(payload: FormSubmissionPayload): 
   };
 
   try {
-    // 1. Direct Client-side Submission to Google Apps Script (Works in static out/ export)
     if (GOOGLE_SHEETS_WEBHOOK_URL) {
+      // Build URL Encoded form params for Google Apps Script e.parameter support
+      const formDataParams = new URLSearchParams();
+      Object.entries(fullPayload).forEach(([key, val]) => {
+        formDataParams.append(key, String(val ?? ""));
+      });
+
+      // Send form submission to Google Apps Script Web App
       fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
         method: "POST",
         mode: "no-cors",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: JSON.stringify(fullPayload),
+        body: formDataParams.toString(),
       }).catch((err) => console.warn("Google Apps Script Client POST warning:", err));
     }
 
-    // 2. Also try API route if available
+    // Also send to API route if running with server
     fetch("/api/lead", {
       method: "POST",
       headers: {
