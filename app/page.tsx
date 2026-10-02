@@ -4,6 +4,8 @@ import FlagshipProjects from "./components/home/FlagshipProjects";
 import TerritoriesSection from "./components/home/TerritoriesSection";
 import MortgageCalculator from "./components/home/MortgageCalculator";
 import ServicesOverview from "./components/home/ServicesOverview";
+import Testimonials from "./components/home/Testimonials";
+import SubscribeSection from "./components/home/SubscribeSection";
 
 export default function Home() {
   return (
@@ -14,9 +16,8 @@ export default function Home() {
       <TerritoriesSection />
       <MortgageCalculator />
       <ServicesOverview />
+      <Testimonials />
+      <SubscribeSection />
     </main>
   );
 }
-
-
-

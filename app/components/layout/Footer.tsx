@@ -400,6 +400,11 @@ export default function Footer() {
         </section>
 
         {/* =======================================================
+            NEWSLETTER SUBSCRIBE BAR
+        ======================================================= */}
+        <FooterSubscribeBar />
+
+        {/* =======================================================
             LOWER TRUST STRIP
         ======================================================= */}
 
@@ -598,5 +603,70 @@ function FooterLink({
 
       <span>{children}</span>
     </Link>
+  );
+}
+
+/* =============================================================
+   FOOTER SUBSCRIBE BAR
+============================================================= */
+
+function FooterSubscribeBar() {
+  const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setSubmitting(true);
+    await submitFormToGoogleSheets({
+      type: "subscribe",
+      email,
+      topic: "Footer Newsletter Subscription",
+      source: "Footer Subscribe Bar",
+    });
+    setSubmitting(false);
+    setDone(true);
+    setEmail("");
+  };
+
+  return (
+    <div className="border-b border-black/10 py-8">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-[#FAF9F6] p-6 sm:p-8 rounded-2xl border border-black/5">
+        <div>
+          <h4 className="font-display text-lg sm:text-xl font-medium text-[#0A0A0A]">
+            Stay Updated on Greater Noida & Jewar Expressway Real Estate
+          </h4>
+          <p className="text-xs text-black/60 font-light mt-1">
+            Get instant notifications on upcoming residential plot launches, price trends & infrastructure updates.
+          </p>
+        </div>
+
+        {done ? (
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#8F5D22] bg-[#B17A3A]/10 px-4 py-2.5 rounded-xl border border-[#B17A3A]/30">
+            <CheckCircle2 size={16} />
+            <span>Thank you for subscribing!</span>
+          </div>
+        ) : (
+          <form onSubmit={handleSubscribe} className="flex w-full md:w-auto items-center gap-2.5">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              className="w-full md:w-72 rounded-xl border border-black/15 bg-white px-4 py-2.5 text-xs text-[#0A0A0A] placeholder-black/40 focus:border-[#8F5D22] focus:outline-none"
+            />
+            <button
+              type="submit"
+              disabled={submitting}
+              className="shrink-0 rounded-xl border border-[#B17A3A] bg-[#9A6426] px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white hover:bg-[#7F511D] transition-colors disabled:opacity-50"
+            >
+              {submitting ? "..." : "Subscribe"}
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
   );
 }

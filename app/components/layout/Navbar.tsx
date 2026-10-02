@@ -4,434 +4,692 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Menu,
-  X,
   ArrowUpRight,
   Heart,
+  Menu,
   PhoneCall,
+  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useWishlist } from "@/app/context/WishlistContext";
 
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
 const navItems = [
-  { label: "Home", href: "/" },
-  { label: "Projects", href: "/projects" },
-  { label: "Services", href: "/services" },
-  { label: "About", href: "/about" },
+  {
+    label: "Home",
+    href: "/",
+  },
+  {
+    label: "About",
+    href: "/about",
+  },
+  {
+    label: "Projects",
+    href: "/projects",
+  },
+  {
+    label: "Services",
+    href: "/services",
+  },
+  {
+    label: "Contact",
+    href: "/contact",
+  },
 ];
+
+/* =========================================================
+   NAVBAR
+========================================================= */
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+
   const pathname = usePathname();
+
   const { wishlistCount, setIsWishlistOpen } = useWishlist();
 
-  /* =========================================================
-     SCROLL DETECTION
-  ========================================================= */
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
-    };
-
-    handleScroll();
-
-    window.addEventListener("scroll", handleScroll, {
-      passive: true,
-    });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  /* =========================================================
-     LOCK BODY WHEN MOBILE MENU OPEN
-  ========================================================= */
-
-  useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [mobileOpen]);
-
-  /* =========================================================
+  /* =======================================================
      CLOSE MOBILE MENU ON ROUTE CHANGE
-  ========================================================= */
+  ======================================================= */
 
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
 
+  /* =======================================================
+     LOCK BODY SCROLL WHEN MOBILE MENU IS OPEN
+  ======================================================= */
+
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
+  /* =======================================================
+     TOGGLE MOBILE MENU
+  ======================================================= */
+
+  const toggleMobileMenu = () => {
+    setMobileOpen((prev) => !prev);
+  };
+
+  /* =======================================================
+     CLOSE MOBILE MENU
+  ======================================================= */
+
+  const closeMobileMenu = () => {
+    setMobileOpen(false);
+  };
+
+  /* =======================================================
+     ACTIVE ROUTE
+  ======================================================= */
+
+  const isActiveRoute = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
   return (
     <>
-      {/* =======================================================
-          NAVBAR HEADER
-      ======================================================= */}
+      {/* =====================================================
+          DESKTOP + MOBILE NAVBAR
+          WHITE THEME ONLY
+      ===================================================== */}
 
-      <header className="fixed left-0 top-0 z-50 w-full transition-all duration-500">
-        {/* =====================================================
-            NAVBAR BACKGROUND & GOLD BOTTOM BORDER LINE
-        ===================================================== */}
+      <header className="fixed inset-x-0 top-0 z-50 w-full">
+        {/* ===================================================
+            WHITE NAVBAR
+        =================================================== */}
 
-        <div
-          className={`absolute inset-0 transition-colors duration-500 ${
-            scrolled ? "bg-[#0A0A0A] shadow-2xl" : "bg-white shadow-sm"
-          }`}
-        />
+        <div className="border-b border-black/[0.08] bg-white shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+          {/* -------------------------------------------------
+              GOLD TOP ACCENT
+          ------------------------------------------------- */}
 
-        {/* METALLIC GOLD BOTTOM HORIZONTAL LINE */}
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#C99545] to-transparent z-20 shadow-[0_1px_6px_rgba(201,149,69,0.5)]" />
+          <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#C99545] to-transparent" />
 
-        {/* =====================================================
-            NAV CONTENT (110px Height)
-        ===================================================== */}
+          {/* =================================================
+              NAV CONTENT
+          ================================================= */}
 
-        <div className="relative mx-auto flex h-[110px] w-[calc(100%-32px)] max-w-[1440px] items-center justify-between md:w-[calc(100%-64px)] z-10">
-          
-          {/* ===================================================
-              LOGO (Prominent Medium-Large Size)
-          =================================================== */}
-
-          <Link
-            href="/"
-            onClick={() => setMobileOpen(false)}
-            className="group relative z-[60] flex items-center"
-            aria-label="Dynamic Homes"
+          <div
+            className="
+              mx-auto
+              flex
+              h-[76px]
+              w-[calc(100%-24px)]
+              max-w-[1440px]
+              items-center
+              justify-between
+              sm:w-[calc(100%-40px)]
+              md:h-[82px]
+              md:w-[calc(100%-64px)]
+              lg:h-[88px]
+              lg:w-[calc(100%-80px)]
+            "
           >
-            <div className="relative h-[72px] w-[240px] md:h-[82px] md:w-[280px] origin-left">
-              {/* -----------------------------------------------
-                  DARK LOGO (Shown when on White Background)
-              ------------------------------------------------ */}
+            {/* =================================================
+                LOGO
+            ================================================= */}
 
+            <Link
+              href="/"
+              onClick={closeMobileMenu}
+              aria-label="Dynamic Homes"
+              className="
+                relative
+                z-[70]
+                flex
+                shrink-0
+                items-center
+              "
+            >
               <div
-                className={`absolute inset-0 transition-opacity duration-500 ${
-                  scrolled ? "opacity-0 pointer-events-none" : "opacity-100"
-                }`}
+                className="
+                  relative
+                  h-[53px]
+                  w-[160px]
+                  sm:h-[57px]
+                  sm:w-[176px]
+                  md:h-[64px]
+                  md:w-[198px]
+                  lg:h-[68px]
+                  lg:w-[215px]
+                "
               >
                 <Image
                   src="/brand/dynamic-homes-logo.png"
                   alt="Dynamic Homes Private Limited"
                   fill
                   priority
-                  sizes="280px"
+                  sizes="
+                    (max-width: 640px) 160px,
+                    (max-width: 768px) 176px,
+                    (max-width: 1024px) 198px,
+                    215px
+                  "
                   className="object-contain object-left"
                 />
               </div>
-
-              {/* -----------------------------------------------
-                  WHITE LOGO (Shown when Scrolled on Black Background)
-              ------------------------------------------------ */}
-
-              <div
-                className={`absolute inset-0 transition-opacity duration-500 ${
-                  scrolled ? "opacity-100" : "opacity-0 pointer-events-none"
-                }`}
-              >
-                <Image
-                  src="/brand/dynamic-homes-white-logo.png"
-                  alt="Dynamic Homes Private Limited"
-                  fill
-                  priority
-                  sizes="280px"
-                  className="object-contain object-left"
-                />
-              </div>
-            </div>
-          </Link>
-
-          {/* ===================================================
-              DESKTOP NAVIGATION (100% Solid Visible Text)
-          =================================================== */}
-
-          <nav className="hidden items-center gap-8 lg:flex xl:gap-10">
-            {navItems.map((item) => {
-              const isActive =
-                pathname === item.href ||
-                (item.href !== "/" &&
-                  pathname.startsWith(item.href));
-
-              // Explicit colors for guaranteed 100% visibility in any browser:
-              const textColor = scrolled
-                ? isActive
-                  ? "#E3B968"
-                  : "#FFFFFF"
-                : isActive
-                  ? "#B17A3A"
-                  : "#0A0A0A"; // SOLID DEEP BLACK ON WHITE BACKGROUND
-
-              return (
-                <div key={item.label}>
-                  <Link
-                    href={item.href}
-                    style={{ color: textColor }}
-                    className="group relative block py-2 text-[13px] font-extrabold tracking-[0.16em] uppercase transition-colors duration-300 hover:opacity-80"
-                  >
-                    {item.label}
-
-                    {/* Active / Hover Line */}
-
-                    <span
-                      className={`
-                        absolute
-                        -bottom-[2px]
-                        left-0
-                        h-[2px]
-                        bg-gradient-to-r
-                        from-[#8F5D22]
-                        via-[#B17A3A]
-                        to-[#F4D58A]
-                        transition-all
-                        duration-300
-                        ease-out
-                        ${
-                          isActive
-                            ? "w-full"
-                            : "w-0 group-hover:w-full"
-                        }
-                      `}
-                    />
-                  </Link>
-                </div>
-              );
-            })}
-          </nav>
-
-          {/* ===================================================
-              DESKTOP ACTIONS
-          =================================================== */}
-
-          <div className="hidden items-center gap-4 lg:flex">
-
-            {/* Wishlist */}
-
-            <button
-              onClick={() => setIsWishlistOpen(true)}
-              style={{
-                color: scrolled ? "#FFFFFF" : "#0A0A0A",
-                borderColor: scrolled ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)",
-                backgroundColor: scrolled ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)"
-              }}
-              className="group relative flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300"
-              aria-label="Wishlist"
-            >
-              <Heart
-                size={18}
-                strokeWidth={2}
-                className="transition-transform duration-300 group-hover:scale-110"
-              />
-
-              {wishlistCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#B17A3A] px-1 text-[8.5px] font-bold text-white shadow-lg">
-                  {wishlistCount}
-                </span>
-              )}
-            </button>
+            </Link>
 
             {/* =================================================
-                ENQUIRE BUTTON
+                DESKTOP NAVIGATION
             ================================================= */}
 
-            <Link
-              href="/contact"
-              className="
-                group
-                relative
-                inline-flex
-                h-[48px]
-                min-w-[160px]
-                items-center
-                justify-center
-                gap-3.5
-                overflow-hidden
-                border
-                border-[#C99545]
-                bg-[#8F5D22]
-                px-6
-                text-[11px]
-                font-bold
-                tracking-[0.18em]
-                text-white
-                uppercase
-                shadow-lg
-                transition-all
-                duration-500
-              "
-            >
-              {/* Gold hover fill */}
+            <nav className="hidden items-center lg:flex">
+              <div className="flex items-center gap-7 xl:gap-9">
+                {navItems.map((item) => {
+                  const active = isActiveRoute(item.href);
 
-              <span
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`
+                        group
+                        relative
+                        flex
+                        h-[42px]
+                        items-center
+                        text-[11px]
+                        font-semibold
+                        uppercase
+                        tracking-[0.17em]
+                        transition-colors
+                        duration-300
+                        ${active
+                          ? "text-[#9A6426]"
+                          : "text-[#161616] hover:text-[#9A6426]"
+                        }
+                      `}
+                    >
+                      {item.label}
+
+                      {/* Active / Hover underline */}
+
+                      <span
+                        className={`
+                          absolute
+                          bottom-0
+                          left-0
+                          h-[2px]
+                          bg-gradient-to-r
+                          from-[#8F5D22]
+                          via-[#C99545]
+                          to-[#E3B968]
+                          transition-all
+                          duration-300
+                          ${active
+                            ? "w-full"
+                            : "w-0 group-hover:w-full"
+                          }
+                        `}
+                      />
+                    </Link>
+                  );
+                })}
+              </div>
+            </nav>
+
+            {/* =================================================
+                DESKTOP ACTIONS
+            ================================================= */}
+
+            <div className="hidden items-center gap-3.5 lg:flex">
+              {/* -------------------------------------------------
+                  DESKTOP WISHLIST
+              ------------------------------------------------- */}
+
+              <button
+                type="button"
+                onClick={() => setIsWishlistOpen(true)}
+                aria-label="Open wishlist"
                 className="
-                  absolute
-                  inset-0
-                  -translate-x-full
-                  bg-gradient-to-r
-                  from-[#B17A3A]
-                  via-[#E3B968]
-                  to-[#C99545]
-                  transition-transform
-                  duration-500
-                  ease-out
-                  group-hover:translate-x-0
+                  relative
+                  flex
+                  h-11
+                  w-11
+                  items-center
+                  justify-center
+                  rounded-full
+                  border
+                  border-black/15
+                  bg-white
+                  text-[#171717]
+                  transition-all
+                  duration-300
+                  hover:border-[#B17A3A]
+                  hover:bg-[#B17A3A]/5
+                  hover:text-[#9A6426]
                 "
-              />
+              >
+                <Heart
+                  size={18}
+                  strokeWidth={1.8}
+                />
 
-              <span className="relative z-10 flex items-center gap-2">
+                {wishlistCount > 0 && (
+                  <span
+                    className="
+                      absolute
+                      -right-1
+                      -top-1
+                      flex
+                      h-[18px]
+                      min-w-[18px]
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-[#B17A3A]
+                      px-1
+                      text-[8px]
+                      font-bold
+                      text-white
+                    "
+                  >
+                    {wishlistCount}
+                  </span>
+                )}
+              </button>
+
+              {/* -------------------------------------------------
+                  DESKTOP ENQUIRE NOW
+              ------------------------------------------------- */}
+
+              <Link
+                href="/contact"
+                className="
+                  group
+                  inline-flex
+                  h-11
+                  min-w-[176px]
+                  items-center
+                  justify-center
+                  gap-2.5
+                  border
+                  border-[#B17A3A]
+                  bg-[#9A6426]
+                  px-6
+                  text-[10px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.16em]
+                  text-white
+                  transition-all
+                  duration-300
+                  hover:bg-[#7F511D]
+                "
+              >
                 <PhoneCall
                   size={14}
-                  strokeWidth={2}
+                  strokeWidth={1.8}
                 />
 
                 <span>Enquire Now</span>
-              </span>
 
-              <ArrowUpRight
-                size={15}
-                strokeWidth={2}
+                <ArrowUpRight
+                  size={14}
+                  strokeWidth={1.8}
+                  className="
+                    transition-transform
+                    duration-300
+                    group-hover:-translate-y-0.5
+                    group-hover:translate-x-0.5
+                  "
+                />
+              </Link>
+            </div>
+
+            {/* =================================================
+                MOBILE CONTROLS
+            ================================================= */}
+
+            <div className="flex items-center gap-2.5 lg:hidden">
+              {/* -------------------------------------------------
+                  MOBILE WISHLIST
+              ------------------------------------------------- */}
+
+              <button
+                type="button"
+                onClick={() => setIsWishlistOpen(true)}
+                aria-label="Open wishlist"
                 className="
                   relative
-                  z-10
-                  transition-transform
+                  flex
+                  h-10
+                  w-10
+                  items-center
+                  justify-center
+                  rounded-full
+                  border
+                  border-black/15
+                  bg-white
+                  text-[#161616]
+                  transition-all
                   duration-300
-                  group-hover:-translate-y-0.5
-                  group-hover:translate-x-0.5
+                  hover:border-[#B17A3A]
+                  hover:text-[#9A6426]
+                  sm:h-11
+                  sm:w-11
                 "
-              />
-            </Link>
-          </div>
+              >
+                <Heart
+                  size={17}
+                  strokeWidth={1.8}
+                  className="sm:h-[18px] sm:w-[18px]"
+                />
 
-          {/* ===================================================
-              MOBILE CONTROLS
-          =================================================== */}
+                {wishlistCount > 0 && (
+                  <span
+                    className="
+                      absolute
+                      -right-1
+                      -top-1
+                      flex
+                      h-[16px]
+                      min-w-[16px]
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-[#B17A3A]
+                      px-1
+                      text-[7px]
+                      font-bold
+                      text-white
+                    "
+                  >
+                    {wishlistCount}
+                  </span>
+                )}
+              </button>
 
-          <div className="relative z-[60] flex items-center gap-3 lg:hidden">
+              {/* -------------------------------------------------
+                  MOBILE MENU BUTTON
+              ------------------------------------------------- */}
 
-            {/* Wishlist */}
-
-            <button
-              onClick={() => setIsWishlistOpen(true)}
-              aria-label="Wishlist"
-              style={{
-                color: scrolled ? "#FFFFFF" : "#0A0A0A",
-                borderColor: scrolled ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)"
-              }}
-              className="relative flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-300"
-            >
-              <Heart
-                size={18}
-                strokeWidth={2}
-              />
-
-              {wishlistCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#B17A3A] px-1 text-[8px] font-bold text-white">
-                  {wishlistCount}
-                </span>
-              )}
-            </button>
-
-            {/* Menu */}
-
-            <button
-              type="button"
-              aria-label={
-                mobileOpen
-                  ? "Close menu"
-                  : "Open menu"
-              }
-              onClick={() =>
-                setMobileOpen((prev) => !prev)
-              }
-              style={{
-                color: mobileOpen ? "#FFFFFF" : scrolled ? "#FFFFFF" : "#0A0A0A",
-                backgroundColor: mobileOpen ? "#B17A3A" : scrolled ? "rgba(255,255,255,0.1)" : "#FFFFFF",
-                borderColor: mobileOpen ? "#B17A3A" : scrolled ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"
-              }}
-              className="flex h-10 w-10 items-center justify-center rounded-sm border transition-all duration-300"
-            >
-              {mobileOpen ? <X size={19} strokeWidth={2} /> : <Menu size={19} strokeWidth={2} />}
-            </button>
+              <button
+                type="button"
+                onClick={toggleMobileMenu}
+                aria-label={
+                  mobileOpen
+                    ? "Close navigation menu"
+                    : "Open navigation menu"
+                }
+                aria-expanded={mobileOpen}
+                className={`
+                  flex
+                  h-10
+                  w-10
+                  items-center
+                  justify-center
+                  rounded-sm
+                  border
+                  transition-all
+                  duration-300
+                  sm:h-11
+                  sm:w-11
+                  ${mobileOpen
+                    ? "border-[#B17A3A] bg-[#B17A3A] text-white"
+                    : "border-black/15 bg-white text-[#161616] hover:border-[#B17A3A] hover:text-[#9A6426]"
+                  }
+                `}
+              >
+                {mobileOpen ? (
+                  <X
+                    size={19}
+                    strokeWidth={1.8}
+                  />
+                ) : (
+                  <Menu
+                    size={19}
+                    strokeWidth={1.8}
+                  />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* =========================================================
-          MOBILE MENU OVERLAY
-      ========================================================= */}
+      {/* =======================================================
+          MOBILE NAVIGATION
+      ======================================================= */}
 
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.35 }}
-            className="fixed inset-0 z-40 bg-[#090909]/98 text-white backdrop-blur-2xl lg:hidden"
+            initial={{
+              opacity: 0,
+              y: -10,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            exit={{
+              opacity: 0,
+              y: -10,
+            }}
+            transition={{
+              duration: 0.22,
+              ease: "easeOut",
+            }}
+            className="
+              fixed
+              inset-x-0
+              top-[78px]
+              z-40
+              max-h-[calc(100vh-78px)]
+              overflow-y-auto
+              border-b
+              border-black/10
+              bg-white
+              shadow-[0_15px_40px_rgba(0,0,0,0.10)]
+              lg:hidden
+              sm:top-[84px]
+            "
           >
-            <div className="pointer-events-none absolute right-[-100px] top-[15%] h-[350px] w-[350px] rounded-full bg-[#B17A3A]/10 blur-[120px]" />
+            {/* =================================================
+                MOBILE MENU CONTENT
+            ================================================= */}
 
-            <div className="relative flex h-full flex-col px-6 pb-7 pt-[145px]">
+            <div
+              className="
+                mx-auto
+                w-[calc(100%-32px)]
+                max-w-[600px]
+                py-4
+                sm:w-[calc(100%-48px)]
+                sm:py-5
+              "
+            >
+              {/* -------------------------------------------------
+                  MENU LABEL
+              ------------------------------------------------- */}
 
-              <div>
-                <div className="flex items-center gap-4">
-                  <span className="h-[5px] w-[5px] rounded-full bg-[#C99545]" />
-                  <span className="text-[9px] font-semibold tracking-[0.3em] text-[#E3B968] uppercase">
-                    Navigation
-                  </span>
-                </div>
-                <div className="mt-5 h-px w-full bg-white/10" />
+              <div className="mb-2 flex items-center gap-2">
+                <span className="h-[5px] w-[5px] rounded-full bg-[#B17A3A]" />
+
+                <span className="text-[9px] font-semibold uppercase tracking-[0.22em] text-black/45">
+                  Navigation
+                </span>
               </div>
 
-              <nav className="mt-3 flex flex-col">
-                {navItems.map((item) => {
-                  const isActive =
-                    pathname === item.href ||
-                    (item.href !== "/" && pathname.startsWith(item.href));
+              {/* -------------------------------------------------
+                  NAV LINKS
+              ------------------------------------------------- */}
+
+              <nav>
+                {navItems.map((item, index) => {
+                  const active = isActiveRoute(item.href);
 
                   return (
-                    <div key={item.label}>
+                    <motion.div
+                      key={item.href}
+                      initial={{
+                        opacity: 0,
+                        x: -8,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        x: 0,
+                      }}
+                      transition={{
+                        delay: index * 0.035,
+                        duration: 0.2,
+                      }}
+                    >
                       <Link
                         href={item.href}
-                        onClick={() => setMobileOpen(false)}
-                        className="group flex items-center justify-between border-b border-white/10 py-5"
+                        onClick={closeMobileMenu}
+                        className="
+                          group
+                          flex
+                          min-h-[50px]
+                          items-center
+                          justify-between
+                          border-b
+                          border-black/[0.08]
+                          py-3
+                        "
                       >
+                        <div className="flex items-center gap-3">
+                          {/* Number */}
+
+                          <span
+                            className={`
+                              w-5
+                              text-[9px]
+                              font-medium
+                              tracking-[0.12em]
+                              ${active
+                                ? "text-[#B17A3A]"
+                                : "text-black/25"
+                              }
+                            `}
+                          >
+                            {String(index + 1).padStart(2, "0")}
+                          </span>
+
+                          {/* Label */}
+
+                          <span
+                            className={`
+                              text-[16px]
+                              font-medium
+                              tracking-wide
+                              transition-colors
+                              duration-200
+                              sm:text-[17px]
+                              ${active
+                                ? "text-[#9A6426]"
+                                : "text-[#171717] group-hover:text-[#9A6426]"
+                              }
+                            `}
+                          >
+                            {item.label}
+                          </span>
+                        </div>
+
+                        {/* Arrow */}
+
                         <span
-                          className={`font-[var(--font-bodoni)] text-[35px] leading-none transition-colors duration-300 ${
-                            isActive
-                              ? "text-[#E3B968]"
-                              : "text-white/90 group-hover:text-[#E3B968]"
-                          }`}
+                          className={`
+                            flex
+                            h-7
+                            w-7
+                            items-center
+                            justify-center
+                            rounded-full
+                            border
+                            transition-all
+                            duration-200
+                            ${active
+                              ? "border-[#B17A3A] bg-[#B17A3A] text-white"
+                              : "border-black/10 text-black/35 group-hover:border-[#B17A3A] group-hover:text-[#B17A3A]"
+                            }
+                          `}
                         >
-                          {item.label}
-                        </span>
-                        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 transition-all duration-300 group-hover:border-[#B17A3A] group-hover:bg-[#B17A3A]">
-                          <ArrowUpRight size={15} strokeWidth={1.5} />
+                          <ArrowUpRight
+                            size={13}
+                            strokeWidth={1.6}
+                          />
                         </span>
                       </Link>
-                    </div>
+                    </motion.div>
                   );
                 })}
               </nav>
 
-              <div className="mt-auto">
+              {/* =================================================
+                  MOBILE ENQUIRE BUTTON
+              ================================================= */}
+
+              <div className="pt-4">
                 <Link
                   href="/contact"
-                  onClick={() => setMobileOpen(false)}
-                  className="group relative flex h-[54px] w-full items-center justify-center gap-3 overflow-hidden border border-[#B17A3A] bg-[#B17A3A] text-[10px] font-semibold tracking-[0.2em] text-white uppercase"
+                  onClick={closeMobileMenu}
+                  className="
+                    flex
+                    h-12
+                    w-full
+                    items-center
+                    justify-center
+                    gap-2.5
+                    bg-[#9A6426]
+                    px-4
+                    text-[10px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.16em]
+                    text-white
+                    transition-colors
+                    duration-300
+                    hover:bg-[#7F511D]
+                  "
                 >
-                  <span className="relative z-10 flex items-center gap-3">
-                    <PhoneCall size={14} strokeWidth={1.5} />
-                    Enquire Now
-                    <ArrowUpRight size={14} strokeWidth={1.5} />
-                  </span>
-                </Link>
+                  <PhoneCall
+                    size={14}
+                    strokeWidth={1.7}
+                  />
 
-                <div className="mt-5 flex items-center justify-between text-[8px] tracking-[0.25em] text-white/35 uppercase">
-                  <span>Dynamic Homes</span>
-                  <span>NCR · India</span>
-                </div>
+                  <span>Enquire Now</span>
+
+                  <ArrowUpRight
+                    size={14}
+                    strokeWidth={1.7}
+                  />
+                </Link>
+              </div>
+
+              {/* -------------------------------------------------
+                  MOBILE FOOTER LABEL
+              ------------------------------------------------- */}
+
+              <div className="flex items-center justify-between pt-4">
+                <span className="text-[8px] uppercase tracking-[0.16em] text-black/30">
+                  Dynamic Homes
+                </span>
+
+                <span className="text-[8px] uppercase tracking-[0.16em] text-black/30">
+                  Greater Noida
+                </span>
               </div>
             </div>
           </motion.div>
